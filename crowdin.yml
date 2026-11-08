@@ -1,7 +1,7 @@
 # Crowdin configuration for Orbit
 #
 # Source language: English (ui/locales/en.json)
-# Crowdin writes translations to ui/locales/<language>.json – Orbit picks
+# Crowdin writes translations to ui/locales/<two-letter code>.json (de, fr, pt, zh, ...) – Orbit picks
 # the system language automatically and falls back to English.
 #
 # Credentials are read from environment variables, never commit them:
@@ -15,9 +15,3 @@ preserve_hierarchy: true
 files:
   - source: /ui/locales/en.json
     translation: /ui/locales/%two_letters_code%.json
-    # e.g. pt-BR and zh-CN keep their region so they don't overwrite pt / zh
-    languages_mapping:
-      two_letters_code:
-        pt-BR: pt-BR
-        zh-CN: zh-CN
-        zh-TW: zh-TW

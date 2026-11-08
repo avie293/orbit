@@ -5,6 +5,7 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod media;
 mod orbit;
 mod scheme;
 
@@ -60,6 +61,9 @@ wrap_render_process_handler! {
         ) {
             if is_orbit_ui(&frame) {
                 RENDER_ROUTER.with(|r| r.on_context_created(browser.cloned(), frame.cloned(), context.cloned()));
+            } else if let (Some(frame), Some(context)) = (frame, context) {
+                // websites: media watcher for Orbit's global media bar
+                media::install(frame, context);
             }
         }
 
@@ -69,6 +73,12 @@ wrap_render_process_handler! {
             frame: Option<&mut Frame>,
             context: Option<&mut V8Context>,
         ) {
+            let mut frame = frame;
+            if !is_orbit_ui(&frame) {
+                if let Some(frame) = frame.as_deref_mut() {
+                    media::uninstall(frame);
+                }
+            }
             RENDER_ROUTER.with(|r| r.on_context_released(browser.cloned(), frame.cloned(), context.cloned()));
         }
 

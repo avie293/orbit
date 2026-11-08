@@ -58,10 +58,15 @@
   "music.feature2": "智能随机播放和收听统计",
   "music.feature3": "随处可见的迷你播放器",
   "player.idleTitle": "当前没有播放内容",
-  "player.idleSubtitle": "Spotify 将在第 3 阶段推出",
+  "player.idleSubtitle": "标签页中播放的视频和音乐会显示在这里",
   "nav.settings": "设置",
   "view.settings": "设置",
   "settings.language": "语言",
   "settings.languageHint": "选择 Orbit 的语言。翻译由 Crowdin 上的社区完成。",
-  "settings.languageSystem": "系统语言"
+  "settings.languageSystem": "系统语言",
+  "player.play": "播放",
+  "player.pause": "暂停",
+  "player.next": "下一个",
+  "player.previous": "上一个",
+  "player.goToSource": "转到来源"
 }

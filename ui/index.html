@@ -31,6 +31,7 @@
     <symbol id="i-prev" viewBox="0 0 24 24"><path d="M7 6v12M18 6l-8 6 8 6z"/></symbol>
     <symbol id="i-next" viewBox="0 0 24 24"><path d="M17 6v12M6 6l8 6-8 6z"/></symbol>
     <symbol id="i-pp" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5.5" width="3.8" height="13" rx="1"/><rect x="13.7" y="5.5" width="3.8" height="13" rx="1"/></symbol>
   </svg>
 
   <div id="app">
@@ -186,19 +187,21 @@
     </main>
 
     <!-- Mini player -->
-    <footer id="player">
-      <div class="track">
-        <div class="cover"></div>
-        <div>
-          <div class="track-title" data-i18n="player.idleTitle"></div>
-          <div class="track-artist muted" data-i18n="player.idleSubtitle"></div>
+    <footer id="player" class="idle">
+      <button class="track" id="player-source" data-i18n-title="player.goToSource">
+        <div class="cover" id="player-cover"></div>
+        <div class="track-text">
+          <div class="track-title" id="player-title"></div>
+          <div class="track-artist muted" id="player-artist"></div>
         </div>
-      </div>
+      </button>
       <div class="controls">
-        <button class="icon-btn" disabled><svg><use href="#i-prev"/></svg></button>
-        <button class="play-btn" disabled><svg><use href="#i-pp"/></svg></button>
-        <button class="icon-btn" disabled><svg><use href="#i-next"/></svg></button>
-        <div class="seek"><div class="seek-fill"></div></div>
+        <button class="icon-btn" id="player-prev" data-i18n-title="player.previous" disabled><svg><use href="#i-prev"/></svg></button>
+        <button class="play-btn" id="player-toggle" data-i18n-title="player.play" disabled><svg><use href="#i-pp"/></svg></button>
+        <button class="icon-btn" id="player-next" data-i18n-title="player.next" disabled><svg><use href="#i-next"/></svg></button>
+        <span class="time" id="player-pos"></span>
+        <div class="seek" id="player-seek"><div class="seek-fill" id="player-fill"></div></div>
+        <span class="time" id="player-dur"></span>
       </div>
       <div class="player-right muted" id="status-text"></div>
     </footer>

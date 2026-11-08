@@ -52,6 +52,8 @@ struct State {
     yt_rect: Option<Rect>,
     browser_visible: bool,
     yt_popup: Option<Window>,
+    /// Page currently in HTML fullscreen (e.g. YouTube's fullscreen button)
+    fullscreen: Option<u32>,
 }
 
 thread_local! {
@@ -81,7 +83,7 @@ fn shell_browser_id() -> Option<i32> {
     with_state(|s| s.shell.clone()).and_then(|v| v.browser()).map(|b| b.identifier())
 }
 
-fn page_browser(id: u32) -> Option<Browser> {
+pub(crate) fn page_browser(id: u32) -> Option<Browser> {
     with_state(|s| s.pages.get(&id).map(|p| p.view.clone())).and_then(|v| v.browser())
 }
 
@@ -101,11 +103,17 @@ fn attach_overlay(view: &BrowserView) -> Option<OverlayController> {
 /// Shows the active tab (and YouTube) at the reported rectangles, hides the rest.
 fn apply_layout() {
     let ops: Vec<(OverlayController, Option<Rect>)> = with_state(|s| {
+        let full = s.fullscreen.zip(s.window.as_ref()).map(|(id, w)| {
+            let b = w.bounds();
+            (id, Rect { x: 0, y: 0, width: b.width, height: b.height })
+        });
         s.pages
             .iter()
             .filter_map(|(id, p)| {
                 let overlay = p.overlay.clone()?;
-                let rect = if *id == YT_ID {
+                let rect = if let Some((fid, rect)) = &full {
+                    (fid == id).then(|| rect.clone())
+                } else if *id == YT_ID {
                     s.yt_rect.clone()
                 } else if s.browser_visible && s.active == Some(*id) {
                     s.content.clone()
@@ -181,6 +189,7 @@ fn handle_command(cmd: &str, args: &Value) -> Result<Value, String> {
                 }
                 s.pages.remove(&id)
             });
+            crate::media::forget_page(id);
             if let Some(page) = page {
                 if let Some(host) = page.view.browser().and_then(|b| b.host()) {
                     host.close_browser(1);
@@ -229,6 +238,7 @@ fn handle_command(cmd: &str, args: &Value) -> Result<Value, String> {
             }
         }
         "yt_popout" => yt_popout()?,
+        "media_control" => crate::media::control(arg_str(args, "action")?, args["value"].as_f64().unwrap_or(0.0))?,
         "yt_dock" => {
             if let Some(popup) = with_state(|s| s.yt_popup.clone()) {
                 popup.close(); // can_close() of the pop-out docks YouTube back
@@ -263,6 +273,26 @@ fn page_action(browser: &Browser, action: &str) -> Result<(), String> {
         other => return Err(format!("Unknown action: {other}")),
     }
     Ok(())
+}
+
+// ------------------------------------------------------------------ fullscreen
+
+/// Puts the window that shows page `id` into real (screen) fullscreen.
+fn set_page_fullscreen(id: u32, on: bool) {
+    let popup = if id == YT_ID { with_state(|s| s.yt_popup.clone()) } else { None };
+    if let Some(popup) = popup {
+        // In the pop-out the page already fills the window.
+        popup.set_fullscreen(on as _);
+        return;
+    }
+    let window = with_state(|s| {
+        s.fullscreen = on.then_some(id);
+        s.window.clone()
+    });
+    if let Some(window) = window {
+        window.set_fullscreen(on as _);
+    }
+    apply_layout();
 }
 
 // ------------------------------------------------------------------ YouTube pop-out
@@ -417,6 +447,26 @@ wrap_client! {
         fn keyboard_handler(&self) -> Option<KeyboardHandler> {
             Some(Keys::new(false))
         }
+        /// Media reports from the watcher script in this page's frames.
+        fn on_process_message_received(
+            &self,
+            _browser: Option<&mut Browser>,
+            frame: Option<&mut Frame>,
+            _source_process: ProcessId,
+            message: Option<&mut ProcessMessage>,
+        ) -> ::std::os::raw::c_int {
+            let (Some(frame), Some(message)) = (frame, message) else { return 0 };
+            if CefString::from(&message.name()).to_string() != crate::media::MESSAGE {
+                return 0;
+            }
+            let json = message
+                .argument_list()
+                .map(|a| CefString::from(&a.string(0)).to_string())
+                .unwrap_or_default();
+            let frame_id = CefString::from(&frame.identifier()).to_string();
+            crate::media::on_report(self.id, frame_id, &json);
+            1
+        }
     }
 }
 
@@ -436,6 +486,11 @@ wrap_display_handler! {
         fn on_title_change(&self, _browser: Option<&mut Browser>, title: Option<&CefString>) {
             let title = title.map(|t| t.to_string()).unwrap_or_default();
             emit("tab-updated", json!({ "id": self.id, "title": title }));
+        }
+
+        /// A page (e.g. YouTube) entered or left HTML fullscreen.
+        fn on_fullscreen_mode_change(&self, _browser: Option<&mut Browser>, fullscreen: ::std::os::raw::c_int) {
+            set_page_fullscreen(self.id, fullscreen != 0);
         }
     }
 }
@@ -589,6 +644,18 @@ wrap_window_delegate! {
     impl PanelDelegate {}
 
     impl WindowDelegate {
+        fn can_minimize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_maximize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_resize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
         fn window_runtime_style(&self) -> RuntimeStyle {
             RuntimeStyle::ALLOY
         }
@@ -609,6 +676,16 @@ wrap_window_delegate! {
 
         fn is_frameless(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
             1
+        }
+
+        fn on_window_bounds_changed(&self, _window: Option<&mut Window>, _new_bounds: Option<&Rect>) {
+            if with_state(|s| s.fullscreen.is_some()) {
+                apply_layout();
+            }
+        }
+
+        fn on_window_fullscreen_transition(&self, _window: Option<&mut Window>, _is_completed: ::std::os::raw::c_int) {
+            apply_layout();
         }
 
         fn can_close(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
@@ -659,6 +736,18 @@ wrap_window_delegate! {
     impl PanelDelegate {}
 
     impl WindowDelegate {
+        fn can_minimize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_maximize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_resize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
         fn window_runtime_style(&self) -> RuntimeStyle {
             RuntimeStyle::ALLOY
         }

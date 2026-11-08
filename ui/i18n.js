@@ -1,7 +1,7 @@
 // Orbit – translations
 //
 // Source language is English (locales/en.json). Translators work on Crowdin,
-// which writes locales/<language>.json (e.g. de.json, fr.json, pt-BR.json).
+// which writes locales/<two-letter code>.json (e.g. de.json, fr.json, pt.json).
 //
 // In HTML:  data-i18n="key"              -> textContent
 //           data-i18n-title="key"        -> title attribute (tooltip)
@@ -20,12 +20,12 @@ const LANGUAGES = [
   ['it', 'Italiano'],
   ['nl', 'Nederlands'],
   ['pl', 'Polski'],
-  ['pt-BR', 'Português (Brasil)'],
+  ['pt', 'Português (Brasil)'],
   ['tr', 'Türkçe'],
   ['ru', 'Русский'],
   ['ja', '日本語'],
   ['ko', '한국어'],
-  ['zh-CN', '简体中文'],
+  ['zh', '简体中文'],
 ];
 
 /** 'system' or a language code from LANGUAGES */
@@ -59,7 +59,7 @@ function preferredLanguage() {
 async function initI18n() {
   I18N.fallback = (await fetchJson('locales/en.json')) || {};
   const pref = preferredLanguage();
-  // e.g. "pt-BR" -> try pt-BR.json, then pt.json
+  // e.g. "pt-BR" -> try pt-BR.json, then pt.json (Crowdin uses two-letter codes)
   for (const code of [pref, pref.split('-')[0]]) {
     if (code === 'en') break;
     const data = await fetchJson(`locales/${code}.json`);

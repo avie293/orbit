@@ -378,6 +378,62 @@ async function installExtension() {
   }
 }
 
+// ------------------------------------------------------------ Media bar
+// The core reports the "primary" media (most recently started) of all tabs and
+// YouTube: { page, playing, title, artist, artwork, position, duration, ... }
+const media = { info: null, at: 0 };
+
+function fmtTime(sec) {
+  if (!isFinite(sec) || sec < 0) sec = 0;
+  const s = Math.floor(sec % 60), m = Math.floor(sec / 60) % 60, h = Math.floor(sec / 3600);
+  const mm = h ? String(m).padStart(2, '0') : m;
+  return (h ? h + ':' : '') + mm + ':' + String(s).padStart(2, '0');
+}
+
+function mediaPosition() {
+  const i = media.info;
+  if (!i) return 0;
+  const p = i.position + (i.playing ? (performance.now() - media.at) / 1000 : 0);
+  return i.duration ? Math.min(p, i.duration) : p;
+}
+
+function tickMedia() {
+  const i = media.info;
+  $('#player-pos').textContent = i ? fmtTime(mediaPosition()) : '';
+  $('#player-fill').style.width = i && i.duration ? (mediaPosition() / i.duration) * 100 + '%' : '0%';
+}
+
+function renderMedia() {
+  const i = media.info;
+  const bar = $('#player');
+  bar.classList.toggle('idle', !i);
+  bar.classList.toggle('playing', !!i?.playing);
+  $('#player-title').textContent = i ? i.title : t('player.idleTitle');
+  $('#player-artist').textContent = i ? i.artist : t('player.idleSubtitle');
+  $('#player-cover').style.backgroundImage = i?.artwork ? `url("${String(i.artwork).replace(/"/g, '%22')}")` : '';
+  const toggle = $('#player-toggle');
+  toggle.querySelector('use').setAttribute('href', i?.playing ? '#i-pause' : '#i-pp');
+  toggle.title = t(i?.playing ? 'player.pause' : 'player.play');
+  for (const id of ['#player-toggle', '#player-prev', '#player-next']) $(id).disabled = !i;
+  $('#player-dur').textContent = i?.duration ? fmtTime(i.duration) : '';
+  tickMedia();
+}
+
+function mediaControl(action, value = 0) {
+  if (media.info) call('media_control', { action, value });
+}
+
+function goToMediaSource() {
+  const i = media.info;
+  if (!i) return;
+  if (i.page === 0) {
+    if (state.ytPopped) call('yt_popout'); // focuses the pop-out window
+    else setView('youtube');
+  } else {
+    activateTab(i.page);
+  }
+}
+
 // ------------------------------------------------------------ Shortcuts
 function runShortcut(cmd) {
   switch (cmd) {
@@ -466,6 +522,24 @@ function wire() {
   });
   listen('open-tab', ({ payload }) => newTab(payload, true));
   listen('shortcut', ({ payload }) => runShortcut(payload));
+
+  listen('media', ({ payload }) => {
+    media.info = payload;
+    media.at = performance.now();
+    renderMedia();
+  });
+  $('#player-toggle').onclick = () => mediaControl('toggle');
+  $('#player-prev').onclick = () => mediaControl('prev');
+  $('#player-next').onclick = () => mediaControl('next');
+  $('#player-source').onclick = goToMediaSource;
+  $('#player-seek').onclick = (e) => {
+    const i = media.info;
+    if (!i || !i.duration) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    mediaControl('seek', ((e.clientX - r.left) / r.width) * i.duration);
+  };
+  setInterval(tickMedia, 500);
+  renderMedia();
 }
 
 // ------------------------------------------------------------ Start

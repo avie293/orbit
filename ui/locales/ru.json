@@ -58,10 +58,15 @@
   "music.feature2": "Умное перемешивание и статистика прослушиваний",
   "music.feature3": "Мини-плеер, который всегда на виду",
   "player.idleTitle": "Ничего не играет",
-  "player.idleSubtitle": "Spotify появится на этапе 3",
+  "player.idleSubtitle": "Здесь появляются видео и музыка из ваших вкладок",
   "nav.settings": "Настройки",
   "view.settings": "Настройки",
   "settings.language": "Язык",
   "settings.languageHint": "Выберите язык Orbit. Переводы делает сообщество на Crowdin.",
-  "settings.languageSystem": "Язык системы"
+  "settings.languageSystem": "Язык системы",
+  "player.play": "Воспроизвести",
+  "player.pause": "Пауза",
+  "player.next": "Следующий",
+  "player.previous": "Предыдущий",
+  "player.goToSource": "Перейти к источнику"
 }

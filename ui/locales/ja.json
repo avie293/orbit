@@ -58,10 +58,15 @@
   "music.feature2": "スマートシャッフルと再生統計",
   "music.feature3": "どこでも表示されるミニプレーヤー",
   "player.idleTitle": "再生中の曲はありません",
-  "player.idleSubtitle": "Spotify はフェーズ 3 で登場します",
+  "player.idleSubtitle": "タブで再生中の動画や音楽がここに表示されます",
   "nav.settings": "設定",
   "view.settings": "設定",
   "settings.language": "言語",
   "settings.languageHint": "Orbit の言語を選択します。翻訳は Crowdin のコミュニティによって行われています。",
-  "settings.languageSystem": "システムの言語"
+  "settings.languageSystem": "システムの言語",
+  "player.play": "再生",
+  "player.pause": "一時停止",
+  "player.next": "次へ",
+  "player.previous": "前へ",
+  "player.goToSource": "再生元に移動"
 }

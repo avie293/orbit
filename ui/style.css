@@ -277,14 +277,32 @@ button, input, select, .tab, #tabstrip { -webkit-app-region: no-drag; }
 
 /* ---------- Mini-Player ---------- */
 #player { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr minmax(260px, 2fr) 1fr; align-items: center; padding: 0 16px 0 14px; gap: 16px; }
-.track { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.cover { width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #2a2a38, #1a1a24); border: 1px solid var(--border); flex-shrink: 0; }
+.track {
+  display: flex; align-items: center; gap: 12px; min-width: 0; text-align: left;
+  padding: 6px 10px 6px 6px; margin-left: -6px; border-radius: 12px; transition: background 0.15s;
+}
+#player:not(.idle) .track:hover { background: rgba(255, 255, 255, 0.05); }
+#player.idle .track { cursor: default; }
+.track-text { min-width: 0; }
+.cover {
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, #2a2a38, #1a1a24) center / cover no-repeat;
+  border: 1px solid var(--border); transition: background-image 0.2s;
+}
+#player.playing .cover { box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.35), 0 6px 20px rgba(34, 211, 238, 0.18); }
+.time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 36px; text-align: center; }
+#player.idle .time { visibility: hidden; }
+.seek { cursor: pointer; position: relative; }
+.seek:hover { height: 6px; }
+#player.idle .seek { cursor: default; }
 .track-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .track-artist { font-size: 12px; }
 .controls { display: flex; align-items: center; justify-content: center; gap: 6px; }
 .play-btn { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--text); color: var(--bg); }
 .play-btn svg { fill: currentColor; stroke: none; width: 16px; height: 16px; margin-left: 2px; }
 .play-btn:disabled { opacity: 0.35; cursor: default; }
-.seek { flex: 1; max-width: 360px; height: 4px; border-radius: 4px; background: var(--surface-3); margin-left: 12px; overflow: hidden; }
-.seek-fill { width: 0; height: 100%; background: var(--grad); }
+.seek { flex: 1; max-width: 420px; height: 4px; border-radius: 4px; background: var(--surface-3); overflow: hidden; transition: height 0.12s; }
+.seek-fill { width: 0; height: 100%; background: var(--grad); transition: width 0.5s linear; }
+.play-btn:not(:disabled):hover { transform: scale(1.06); }
+.play-btn { transition: transform 0.12s, opacity 0.15s; margin: 0 4px; }
 .player-right { text-align: right; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

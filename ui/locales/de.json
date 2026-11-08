@@ -58,10 +58,15 @@
   "music.feature2": "Smart-Shuffle und Hör-Statistiken",
   "music.feature3": "Mini-Player, der überall sichtbar bleibt",
   "player.idleTitle": "Gerade läuft nichts",
-  "player.idleSubtitle": "Spotify kommt in Phase 3",
+  "player.idleSubtitle": "Videos und Musik aus deinen Tabs erscheinen hier",
   "nav.settings": "Einstellungen",
   "view.settings": "Einstellungen",
   "settings.language": "Sprache",
   "settings.languageHint": "Wähle die Sprache von Orbit. Die Übersetzungen macht die Community auf Crowdin.",
-  "settings.languageSystem": "Systemsprache"
+  "settings.languageSystem": "Systemsprache",
+  "player.play": "Abspielen",
+  "player.pause": "Pause",
+  "player.next": "Weiter",
+  "player.previous": "Zurück",
+  "player.goToSource": "Zur Quelle springen"
 }

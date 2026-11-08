@@ -58,10 +58,15 @@
   "music.feature2": "Inteligentne losowanie i statystyki słuchania",
   "music.feature3": "Miniodtwarzacz zawsze na widoku",
   "player.idleTitle": "Nic nie jest odtwarzane",
-  "player.idleSubtitle": "Spotify pojawi się w fazie 3",
+  "player.idleSubtitle": "Tutaj pojawiają się filmy i muzyka z Twoich kart",
   "nav.settings": "Ustawienia",
   "view.settings": "Ustawienia",
   "settings.language": "Język",
   "settings.languageHint": "Wybierz język Orbit. Tłumaczenia tworzy społeczność na Crowdin.",
-  "settings.languageSystem": "Język systemu"
+  "settings.languageSystem": "Język systemu",
+  "player.play": "Odtwórz",
+  "player.pause": "Wstrzymaj",
+  "player.next": "Następny",
+  "player.previous": "Poprzedni",
+  "player.goToSource": "Przejdź do źródła"
 }

@@ -58,10 +58,15 @@
   "music.feature2": "Slim shuffelen en luisterstatistieken",
   "music.feature3": "Minispeler die overal zichtbaar blijft",
   "player.idleTitle": "Er speelt niets",
-  "player.idleSubtitle": "Spotify komt in fase 3",
+  "player.idleSubtitle": "Video’s en muziek uit je tabbladen verschijnen hier",
   "nav.settings": "Instellingen",
   "view.settings": "Instellingen",
   "settings.language": "Taal",
   "settings.languageHint": "Kies de taal van Orbit. De vertalingen worden door de community op Crowdin gemaakt.",
-  "settings.languageSystem": "Systeemtaal"
+  "settings.languageSystem": "Systeemtaal",
+  "player.play": "Afspelen",
+  "player.pause": "Pauzeren",
+  "player.next": "Volgende",
+  "player.previous": "Vorige",
+  "player.goToSource": "Naar de bron"
 }

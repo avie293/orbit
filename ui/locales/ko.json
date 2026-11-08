@@ -58,10 +58,15 @@
   "music.feature2": "스마트 셔플 및 감상 통계",
   "music.feature3": "어디서나 보이는 미니 플레이어",
   "player.idleTitle": "재생 중인 항목 없음",
-  "player.idleSubtitle": "Spotify는 3단계에서 제공됩니다",
+  "player.idleSubtitle": "탭에서 재생 중인 동영상과 음악이 여기에 표시됩니다",
   "nav.settings": "설정",
   "view.settings": "설정",
   "settings.language": "언어",
   "settings.languageHint": "Orbit의 언어를 선택하세요. 번역은 Crowdin 커뮤니티가 진행합니다.",
-  "settings.languageSystem": "시스템 언어"
+  "settings.languageSystem": "시스템 언어",
+  "player.play": "재생",
+  "player.pause": "일시정지",
+  "player.next": "다음",
+  "player.previous": "이전",
+  "player.goToSource": "재생 중인 곳으로 이동"
 }

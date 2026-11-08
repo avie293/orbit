@@ -58,10 +58,15 @@
   "music.feature2": "Lecture aléatoire intelligente et statistiques d’écoute",
   "music.feature3": "Mini-lecteur toujours visible",
   "player.idleTitle": "Aucune lecture en cours",
-  "player.idleSubtitle": "Spotify arrive dans la phase 3",
+  "player.idleSubtitle": "Les vidéos et la musique de vos onglets s’affichent ici",
   "nav.settings": "Paramètres",
   "view.settings": "Paramètres",
   "settings.language": "Langue",
   "settings.languageHint": "Choisissez la langue d’Orbit. Les traductions sont réalisées par la communauté sur Crowdin.",
-  "settings.languageSystem": "Langue du système"
+  "settings.languageSystem": "Langue du système",
+  "player.play": "Lecture",
+  "player.pause": "Pause",
+  "player.next": "Suivant",
+  "player.previous": "Précédent",
+  "player.goToSource": "Aller à la source"
 }

@@ -58,10 +58,15 @@
   "music.feature2": "Akıllı karıştırma ve dinleme istatistikleri",
   "music.feature3": "Her yerde görünür kalan mini oynatıcı",
   "player.idleTitle": "Şu anda bir şey çalmıyor",
-  "player.idleSubtitle": "Spotify 3. aşamada geliyor",
+  "player.idleSubtitle": "Sekmelerindeki videolar ve müzikler burada görünür",
   "nav.settings": "Ayarlar",
   "view.settings": "Ayarlar",
   "settings.language": "Dil",
   "settings.languageHint": "Orbit'in dilini seç. Çeviriler Crowdin üzerinde topluluk tarafından yapılır.",
-  "settings.languageSystem": "Sistem dili"
+  "settings.languageSystem": "Sistem dili",
+  "player.play": "Oynat",
+  "player.pause": "Duraklat",
+  "player.next": "Sonraki",
+  "player.previous": "Önceki",
+  "player.goToSource": "Kaynağa git"
 }

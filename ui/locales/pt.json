@@ -58,10 +58,15 @@
   "music.feature2": "Ordem aleatória inteligente e estatísticas de audição",
   "music.feature3": "Miniplayer sempre visível",
   "player.idleTitle": "Nada tocando",
-  "player.idleSubtitle": "O Spotify chega na fase 3",
+  "player.idleSubtitle": "Vídeos e músicas das suas guias aparecem aqui",
   "nav.settings": "Configurações",
   "view.settings": "Configurações",
   "settings.language": "Idioma",
   "settings.languageHint": "Escolha o idioma do Orbit. As traduções são feitas pela comunidade no Crowdin.",
-  "settings.languageSystem": "Idioma do sistema"
+  "settings.languageSystem": "Idioma do sistema",
+  "player.play": "Reproduzir",
+  "player.pause": "Pausar",
+  "player.next": "Próxima",
+  "player.previous": "Anterior",
+  "player.goToSource": "Ir para a origem"
 }
