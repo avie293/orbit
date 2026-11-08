@@ -79,6 +79,29 @@ pub fn emit(name: &str, payload: Value) {
     frame.execute_java_script(Some(&cef_str(&js)), Some(&cef_str(SHELL_URL)), 0);
 }
 
+wrap_task! {
+    struct EmitTask {
+        name: String,
+        payload: Value,
+    }
+
+    impl Task {
+        fn execute(&self) {
+            emit(&self.name, self.payload.clone());
+        }
+    }
+}
+
+/// Like `emit`, but callable from worker threads (posts to the UI thread).
+pub fn emit_from_any_thread(name: &str, payload: Value) {
+    if currently_on(ThreadId::UI) != 0 {
+        emit(name, payload);
+    } else {
+        let mut task = EmitTask::new(name.to_string(), payload);
+        post_task(ThreadId::UI, Some(&mut task));
+    }
+}
+
 fn shell_browser_id() -> Option<i32> {
     with_state(|s| s.shell.clone()).and_then(|v| v.browser()).map(|b| b.identifier())
 }
@@ -359,9 +382,27 @@ impl BrowserSideHandler for IpcHandler {
         if !(from_shell && from_ui) {
             return false;
         }
-        let result = serde_json::from_str::<Value>(request)
-            .map_err(|e| e.to_string())
-            .and_then(|v| handle_command(v["cmd"].as_str().unwrap_or(""), &v["args"]));
+        let request = match serde_json::from_str::<Value>(request) {
+            Ok(v) => v,
+            Err(e) => {
+                callback.lock().unwrap().failure(1, &e.to_string());
+                return true;
+            }
+        };
+        let cmd = request["cmd"].as_str().unwrap_or("").to_string();
+        // File system work runs on a worker thread so Orbit never freezes.
+        if cmd.starts_with("fs_") {
+            std::thread::spawn(move || {
+                let result = crate::files::handle(&cmd, &request["args"]);
+                let cb = callback.lock().unwrap();
+                match result {
+                    Ok(v) => cb.success_str(&v.to_string()),
+                    Err(e) => cb.failure(1, &e),
+                }
+            });
+            return true;
+        }
+        let result = handle_command(&cmd, &request["args"]);
         let cb = callback.lock().unwrap();
         match result {
             Ok(v) => cb.success_str(&v.to_string()),
@@ -786,9 +827,15 @@ pub fn start() {
     let mut client = ShellClient::new();
     let mut delegate = ShellViewDelegate::new();
     let settings = BrowserSettings { background_color: BG_COLOR, ..Default::default() };
+    // `orbit.exe --view=explorer` opens directly in that view
+    let view = std::env::args().find_map(|a| a.strip_prefix("--view=").map(String::from));
+    let url = match view {
+        Some(v) if v.chars().all(|c| c.is_ascii_alphanumeric()) => format!("{SHELL_URL}#{v}"),
+        _ => SHELL_URL.to_string(),
+    };
     let shell = browser_view_create(
         Some(&mut client),
-        Some(&cef_str(SHELL_URL)),
+        Some(&cef_str(&url)),
         Some(&settings),
         None,
         None,

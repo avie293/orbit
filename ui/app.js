@@ -170,6 +170,7 @@ function setView(view) {
   $('#view-title').hidden = view === 'browser';
   $('#view-title').textContent = titles[view] || '';
   if (view === 'extensions') refreshExtensions();
+  if (view === 'explorer') fxShow();
   syncLayout();
 }
 
@@ -444,9 +445,12 @@ function runShortcut(cmd) {
     case 'prev-tab': cycleTab(-1); break;
     case 'toggle-yt': setView(state.view === 'youtube' ? 'browser' : 'youtube'); break;
     // sent by the core when the UI itself has focus
-    case 'reload': tabAction('reload'); break;
-    case 'back': tabAction('back'); break;
-    case 'forward': tabAction('forward'); break;
+    case 'reload':
+    case 'back':
+    case 'forward':
+      if (state.view === 'explorer') fxShortcut(cmd);
+      else tabAction(cmd);
+      break;
   }
 }
 
@@ -522,6 +526,7 @@ function wire() {
   });
   listen('open-tab', ({ payload }) => newTab(payload, true));
   listen('shortcut', ({ payload }) => runShortcut(payload));
+  fxWire();
 
   listen('media', ({ payload }) => {
     media.info = payload;
@@ -561,6 +566,8 @@ function restoreSession() {
   await initI18n();
   wire();
   renderStart();
-  setView('browser');
   restoreSession();
+  // orbit.exe --view=explorer opens a specific view
+  const startView = location.hash.slice(1);
+  setView(document.getElementById('view-' + startView) ? startView : 'browser');
 })();

@@ -306,3 +306,83 @@ button, input, select, .tab, #tabstrip { -webkit-app-region: no-drag; }
 .play-btn:not(:disabled):hover { transform: scale(1.06); }
 .play-btn { transition: transform 0.12s, opacity 0.15s; margin: 0 4px; }
 .player-right { text-align: right; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- File explorer ---------- */
+#view-explorer { position: relative; }
+.fx-toolbar { display: flex; align-items: center; gap: 4px; padding: 8px; }
+.icon-btn.on { color: var(--accent); background: rgba(167, 139, 250, 0.12); }
+.fx-pathbox {
+  flex: 1; min-width: 0; height: 36px; margin: 0 6px; padding: 0 8px; display: flex; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 11px; cursor: text;
+}
+.fx-pathbox:focus-within { border-color: rgba(167, 139, 250, 0.55); box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.12); }
+.fx-crumbs { display: flex; align-items: center; gap: 2px; min-width: 0; overflow: hidden; white-space: nowrap; }
+.fx-crumb { padding: 3px 8px; border-radius: 7px; color: var(--muted); flex-shrink: 0; }
+.fx-crumb:hover { background: rgba(255, 255, 255, 0.07); color: var(--text); }
+.fx-crumb:last-child { color: var(--text); font-weight: 500; }
+.fx-crumb-sep { color: var(--muted); opacity: 0.6; }
+#fx-path { flex: 1; background: none; border: 0; outline: 0; user-select: text; }
+.fx-search {
+  width: 240px; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; margin-right: 4px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 11px;
+}
+.fx-search:focus-within { border-color: rgba(167, 139, 250, 0.55); }
+.fx-search svg { width: 15px; height: 15px; color: var(--muted); }
+#fx-search { flex: 1; min-width: 0; background: none; border: 0; outline: 0; user-select: text; }
+
+.fx-body { flex: 1; min-height: 0; display: flex; gap: 6px; padding: 0 6px 6px; }
+.fx-side { width: 210px; flex-shrink: 0; overflow-y: auto; padding: 4px 2px; }
+.fx-side-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 10px 10px 6px; }
+.fx-place { width: 100%; text-align: left; padding: 7px 10px; border-radius: 9px; color: var(--muted); transition: background 0.12s, color 0.12s; }
+.fx-place:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+.fx-place-row { display: flex; align-items: center; gap: 10px; }
+.fx-place-row svg { width: 17px; height: 17px; }
+.fx-place-row span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fx-drive-info { padding: 6px 0 2px 27px; }
+.fx-drive-bar { height: 4px; border-radius: 4px; background: var(--surface-3); overflow: hidden; margin-bottom: 4px; }
+.fx-drive-bar span { display: block; height: 100%; background: var(--grad); border-radius: 4px; }
+.fx-drive-bar span.full { background: linear-gradient(90deg, #fb923c, #ef4444); }
+
+.fx-main { flex: 1; min-width: 0; display: flex; flex-direction: column; background: var(--bg); border-radius: 10px; overflow: hidden; }
+.fx-head, .fx-row { display: grid; grid-template-columns: minmax(200px, 1fr) 170px 150px 150px; align-items: center; }
+.fx-head { border-bottom: 1px solid var(--border); padding: 0 8px; }
+.fx-head button { text-align: left; padding: 9px 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.fx-head button:hover { color: var(--text); }
+.fx-head button.active { color: var(--text); }
+.fx-head button.active::after { content: ' ' attr(data-dir); color: var(--accent); }
+.fx-list { flex: 1; overflow-y: auto; padding: 4px 8px; outline: 0; }
+.fx-row { height: 32px; border-radius: 8px; cursor: default; }
+.fx-row:hover { background: rgba(255, 255, 255, 0.035); }
+.fx-row.sel { background: rgba(167, 139, 250, 0.16); box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.35); }
+.fx-row.hidden-file { opacity: 0.55; }
+.fx-name { display: flex; align-items: center; gap: 10px; padding: 0 8px; min-width: 0; }
+.fx-name svg { width: 18px; height: 18px; flex-shrink: 0; }
+.fx-name svg use[href="#i-folder"] { fill: currentColor; fill-opacity: 0.18; }
+.fx-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fx-cell { padding: 0 8px; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fx-size { position: relative; text-align: right; font-variant-numeric: tabular-nums; }
+.fx-size span:last-child { position: relative; }
+.fx-sizebar { position: absolute; right: 8px; top: 50%; height: 18px; transform: translateY(-50%); border-radius: 5px; background: linear-gradient(90deg, rgba(167, 139, 250, 0.12), rgba(34, 211, 238, 0.28)); }
+.fx-rename { width: 100%; height: 24px; padding: 0 6px; border-radius: 6px; border: 1px solid rgba(167, 139, 250, 0.6); background: var(--surface-3); outline: 0; user-select: text; }
+.fx-empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+.fx-status { display: flex; justify-content: space-between; gap: 12px; padding: 7px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+#fx-status-right.err { color: #ff7b8a; }
+
+.fx-preview { width: 300px; flex-shrink: 0; overflow-y: auto; background: var(--bg); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.fx-pv-media { border-radius: 10px; overflow: hidden; background: repeating-conic-gradient(#1a1a23 0% 25%, #14141b 0% 50%) 50% / 16px 16px; display: grid; place-items: center; min-height: 160px; }
+.fx-pv-media img { max-width: 100%; max-height: 360px; display: block; }
+.fx-pv-text { margin: 0; padding: 12px; max-height: 420px; overflow: auto; font: 12px/1.5 Consolas, "Cascadia Code", monospace; background: var(--surface-2); border-radius: 10px; white-space: pre-wrap; word-break: break-word; user-select: text; }
+.fx-pv-icon { display: grid; place-items: center; padding: 24px 0 8px; }
+.fx-pv-icon svg { width: 72px; height: 72px; stroke-width: 1.2; }
+.fx-pv-name { font-weight: 600; font-size: 14px; word-break: break-word; }
+.fx-pv-open { align-self: flex-start; }
+
+.fx-menu {
+  position: absolute; z-index: 20; min-width: 210px; padding: 6px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border-strong); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  animation: view-in 0.12s var(--ease);
+}
+.fx-menu button { display: block; width: 100%; text-align: left; padding: 8px 12px; border-radius: 8px; }
+.fx-menu button:hover { background: rgba(255, 255, 255, 0.07); }
+.fx-menu button.danger { color: #ff7b8a; }
+.fx-menu-sep { height: 1px; margin: 5px 6px; background: var(--border-strong); }

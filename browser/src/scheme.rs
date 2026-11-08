@@ -38,8 +38,65 @@ fn mime_for(path: &Path) -> &'static str {
         "png" => "image/png",
         "ico" => "image/x-icon",
         "woff2" => "font/woff2",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "bmp" => "image/bmp",
+        "avif" => "image/avif",
         _ => "application/octet-stream",
     }
+}
+
+/// `orbit://app/__file?path=C%3A%5C...` – a local file for the explorer's preview.
+/// Only Orbit's own UI may load these (checked via the requesting frame).
+const FILE_ROUTE: &str = "orbit://app/__file?path=";
+
+fn percent_decode(s: &str) -> String {
+    let bytes = s.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'%' if i + 2 < bytes.len() => {
+                let hex = std::str::from_utf8(&bytes[i + 1..i + 3]).ok().and_then(|h| u8::from_str_radix(h, 16).ok());
+                match hex {
+                    Some(b) => {
+                        out.push(b);
+                        i += 3;
+                    }
+                    None => {
+                        out.push(b'%');
+                        i += 1;
+                    }
+                }
+            }
+            b'+' => {
+                out.push(b' ');
+                i += 1;
+            }
+            b => {
+                out.push(b);
+                i += 1;
+            }
+        }
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
+
+fn local_file(url: &str, frame: Option<&mut Frame>) -> Option<(PathBuf, Vec<u8>)> {
+    let encoded = url.strip_prefix(FILE_ROUTE)?;
+    let from_ui = frame
+        .map(|f| CefString::from(&f.url()).to_string().starts_with("orbit://app/"))
+        .unwrap_or(false);
+    if !from_ui {
+        return None;
+    }
+    let path = PathBuf::from(percent_decode(encoded));
+    let meta = std::fs::metadata(&path).ok()?;
+    if !meta.is_file() || meta.len() > 64 * 1024 * 1024 {
+        return None;
+    }
+    Some((path.clone(), std::fs::read(&path).ok()?))
 }
 
 /// Maps a request URL to a file inside the UI folder (no `..` escapes).
@@ -120,12 +177,17 @@ wrap_scheme_handler_factory! {
         fn create(
             &self,
             _browser: Option<&mut Browser>,
-            _frame: Option<&mut Frame>,
+            frame: Option<&mut Frame>,
             _scheme_name: Option<&CefString>,
             request: Option<&mut Request>,
         ) -> Option<ResourceHandler> {
             let url = CefString::from(&request?.url()).to_string();
-            let (status, mime, data) = match resolve(&url).and_then(|p| std::fs::read(&p).ok().map(|d| (p, d))) {
+            let found = if url.starts_with(FILE_ROUTE) {
+                local_file(&url, frame)
+            } else {
+                resolve(&url).and_then(|p| std::fs::read(&p).ok().map(|d| (p, d)))
+            };
+            let (status, mime, data) = match found {
                 Some((path, data)) => (200, mime_for(&path).to_string(), data),
                 None => (404, "text/plain".to_string(), b"Not found".to_vec()),
             };

@@ -31,6 +31,13 @@
     <symbol id="i-prev" viewBox="0 0 24 24"><path d="M7 6v12M18 6l-8 6 8 6z"/></symbol>
     <symbol id="i-next" viewBox="0 0 24 24"><path d="M17 6v12M6 6l8 6-8 6z"/></symbol>
     <symbol id="i-pp" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="i-sidebar" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M15 4.5v15"/></symbol>
+    <symbol id="i-folder-plus" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2.5h7.5A2.5 2.5 0 0 1 21 10v6.5a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5z"/><path d="M12 10.5v5M9.5 13h5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+    <symbol id="i-drive" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M7 14h.01M11 14h6"/></symbol>
     <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5.5" width="3.8" height="13" rx="1"/><rect x="13.7" y="5.5" width="3.8" height="13" rx="1"/></symbol>
   </svg>
 
@@ -158,18 +165,48 @@
         </div>
       </section>
 
-      <section id="view-explorer" class="view card placeholder" hidden>
-        <div class="ph">
-          <div class="ph-icon"><svg><use href="#i-folder"/></svg></div>
-          <h2 data-i18n="files.title"></h2>
-          <p class="muted" data-i18n="files.soon"></p>
-          <ul>
-            <li data-i18n="files.feature1"></li>
-            <li data-i18n="files.feature2"></li>
-            <li data-i18n="files.feature3"></li>
-            <li data-i18n="files.feature4"></li>
-          </ul>
+      <section id="view-explorer" class="view card" hidden>
+        <div class="fx-toolbar">
+          <button class="icon-btn" id="fx-back" data-i18n-title="files.back"><svg><use href="#i-left"/></svg></button>
+          <button class="icon-btn" id="fx-fwd" data-i18n-title="files.forward"><svg><use href="#i-right"/></svg></button>
+          <button class="icon-btn" id="fx-up" data-i18n-title="files.up"><svg><use href="#i-up"/></svg></button>
+          <button class="icon-btn" id="fx-refresh" data-i18n-title="files.refresh"><svg><use href="#i-reload"/></svg></button>
+          <div class="fx-pathbox" id="fx-pathbox">
+            <div class="fx-crumbs" id="fx-crumbs"></div>
+            <input id="fx-path" spellcheck="false" hidden />
+          </div>
+          <form class="fx-search" id="fx-search-form" autocomplete="off">
+            <svg><use href="#i-search"/></svg>
+            <input id="fx-search" spellcheck="false" data-i18n-placeholder="files.searchPlaceholder" />
+          </form>
+          <button class="icon-btn" id="fx-newfolder" data-i18n-title="files.newFolder"><svg><use href="#i-folder-plus"/></svg></button>
+          <button class="icon-btn" id="fx-sizes" data-i18n-title="files.folderSizes"><svg><use href="#i-chart"/></svg></button>
+          <button class="icon-btn" id="fx-hidden" data-i18n-title="files.showHidden"><svg><use href="#i-eye"/></svg></button>
+          <button class="icon-btn" id="fx-preview-btn" data-i18n-title="files.preview"><svg><use href="#i-sidebar"/></svg></button>
         </div>
+        <div class="fx-body">
+          <aside class="fx-side">
+            <div class="fx-side-title" data-i18n="files.quickAccess"></div>
+            <div id="fx-quick"></div>
+            <div class="fx-side-title" data-i18n="files.drives"></div>
+            <div id="fx-drives"></div>
+          </aside>
+          <div class="fx-main">
+            <div class="fx-head" id="fx-head">
+              <button data-sort="name" data-i18n="files.col.name"></button>
+              <button data-sort="modified" data-i18n="files.col.modified"></button>
+              <button data-sort="type" data-i18n="files.col.type"></button>
+              <button data-sort="size" data-i18n="files.col.size"></button>
+            </div>
+            <div class="fx-list" id="fx-list" tabindex="0"></div>
+            <div class="fx-status">
+              <span id="fx-status-left"></span>
+              <span id="fx-status-right"></span>
+            </div>
+          </div>
+          <aside class="fx-preview" id="fx-preview" hidden></aside>
+        </div>
+        <div class="fx-menu" id="fx-menu" hidden></div>
       </section>
 
       <section id="view-music" class="view card placeholder" hidden>
@@ -209,6 +246,7 @@
 
   <script src="bridge.js"></script>
   <script src="i18n.js"></script>
+  <script src="explorer.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
