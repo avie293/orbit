@@ -1,0 +1,23 @@
+[package]
+name = "orbit-browser"
+version = "0.1.0"
+edition = "2021"
+default-run = "orbit"
+
+[[bin]]
+name = "orbit"
+path = "src/main.rs"
+
+# Build tool: compiles Orbit and copies the Chromium (CEF) runtime files next to it.
+#   cargo run --bin bundle            -> target/bundle/orbit.exe
+#   cargo run --bin bundle -- --release
+[[bin]]
+name = "bundle"
+path = "tools/bundle.rs"
+
+[dependencies]
+# Chromium Embedded Framework – pure Chromium, no WebView2 / Edge.
+# The sandbox (bootstrap.exe) gets enabled before the first release.
+cef = { version = "=156.4.0", default-features = false, features = ["build-util"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

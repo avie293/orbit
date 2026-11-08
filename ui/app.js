@@ -3,9 +3,7 @@
 // Rust places on top of the #viewport and #yt-viewport placeholders.
 // All user-facing text goes through t() (see i18n.js / locales/en.json).
 
-const { invoke } = window.__TAURI__.core;
-const { listen } = window.__TAURI__.event;
-const appWindow = window.__TAURI__.window.getCurrentWindow();
+const { invoke, listen, appWindow } = window.OrbitBridge;
 
 const SEARCH_URL = 'https://www.google.com/search?q=';
 const QUICK_LINKS = [
@@ -389,6 +387,10 @@ function runShortcut(cmd) {
     case 'next-tab': cycleTab(1); break;
     case 'prev-tab': cycleTab(-1); break;
     case 'toggle-yt': setView(state.view === 'youtube' ? 'browser' : 'youtube'); break;
+    // sent by the core when the UI itself has focus
+    case 'reload': tabAction('reload'); break;
+    case 'back': tabAction('back'); break;
+    case 'forward': tabAction('forward'); break;
   }
 }
 
